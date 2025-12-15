@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+import warnings
+
+# Suppress deprecation warnings from dj_rest_auth (will be fixed in future library updates)
+warnings.filterwarnings('ignore', category=UserWarning, module='dj_rest_auth')
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +32,7 @@ SECRET_KEY = 'django-insecure-2)d+r_a8ntgie+&zsm)oh!4v!!h5%ysy_o_0b8a%-dnfc$f(^-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','conceptiq-backend.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1','conceptiq-backend.onrender.com', "54.206.56.208", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -55,6 +60,11 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1 
+
+# Django-allauth Account Settings
+# Using the new format to avoid deprecation warnings
+ACCOUNT_LOGIN_METHODS = {'email'}  # Use email for authentication
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # Required fields for signup (* = required)
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -109,15 +119,27 @@ WSGI_APPLICATION = 'Conceptiq.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'conceptiq',
+#         'HOST': 'aws-1-ap-southeast-1.pooler.supabase.com',
+#         'USER': 'postgres.pqulruzkwjalefqabalq',
+#         'PASSWORD': 'conceptiq',
+#         'PORT': '5432',
+#         'OPTIONS': {'sslmode': 'require'},
+#     }
+# }
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'conceptiq',
-        'HOST': 'aws-1-ap-southeast-1.pooler.supabase.com',
-        'USER': 'postgres.pqulruzkwjalefqabalq',
-        'PASSWORD': 'conceptiq',
-        'PORT': '5432',
-        'OPTIONS': {'sslmode': 'require'},
+        'NAME': 'postgres',       # Database name you created on RDS
+        'USER': 'conceptiq',   # The username you set for RDS
+        'PASSWORD': 'Conceptiq459',  # The password you set for RDS
+        'HOST': 'conceptiq-database-1.cvcyy48a8a7e.ap-south-1.rds.amazonaws.com',  # RDS endpoint
+        'PORT': '5432',  # Default PostgreSQL port
     }
 }
 
@@ -156,7 +178,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
